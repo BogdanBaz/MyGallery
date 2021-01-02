@@ -1,0 +1,32 @@
+package com.example.response_processing;
+
+import com.example.unsplash_connection.Urls;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect
+public class ImagesResponse implements Serializable {
+    @JsonProperty("urls")
+    private Urls urls;
+    @JsonProperty("id")
+    private String id;
+
+    public Urls getUrls() {
+        return urls;
+    }
+    public void setUrls(Urls urls) {
+        this.urls = urls;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+}
