@@ -1,4 +1,4 @@
-package com.example.unsplash_connection;
+package com.example.api.data;
 
 public class UnsplashAuthorizationData {
     final static String BASE_URL = "https://api.unsplash.com/";

@@ -1,4 +1,4 @@
-package com.example.mygallery.ui.splashscreen;
+package com.example.ui.screens.splashscreen;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mygallery.R;
-import com.example.mygallery.ui.screens.MainScreen;
+import com.example.ui.screens.mainscreen.MainScreen;
 
 public class SplashScreen extends AppCompatActivity {
     @Override

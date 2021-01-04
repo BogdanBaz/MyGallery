@@ -1,6 +1,5 @@
-package com.example.response_processing;
+package com.example.api.responses;
 
-import com.example.unsplash_connection.Urls;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

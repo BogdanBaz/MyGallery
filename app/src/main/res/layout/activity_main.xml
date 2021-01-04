@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_toEndOf="@id/toolbar"
     android:background="@drawable/ic_launcher_background"
-    tools:context=".ui.screens.MainScreen">
+    tools:context="com.example.ui.screens.mainscreen.MainScreen">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -32,7 +32,8 @@
         app:layout_constraintHorizontal_bias="0.997"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        android:contentDescription="@string/todo" />
 
     <EditText
         android:id="@+id/editTextSrch"
@@ -55,8 +56,8 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:gravity="left"
-        android:text="My_Gallery"
+        android:gravity="start"
+        android:text="@string/my_gallery"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="@+id/toolbar"
@@ -65,6 +66,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.4" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="58dp"
+        app:layout_constraintTop_toTopOf="@+id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/toolbar"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="2dp"
+            tools:ignore="NotSibling">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </RelativeLayout>
+    <!--
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -89,5 +117,5 @@
 
         </GridView>
     </LinearLayout>
-
+-->
 </androidx.constraintlayout.widget.ConstraintLayout>
