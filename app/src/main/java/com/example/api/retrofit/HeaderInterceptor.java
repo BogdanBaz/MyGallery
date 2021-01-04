@@ -1,4 +1,4 @@
-package com.example.unsplash_connection;
+package com.example.api.retrofit;
 
 import org.jetbrains.annotations.NotNull;
 

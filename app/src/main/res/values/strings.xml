@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MyGallery</string>
     <string name="todo">TODO</string>
+    <string name="my_gallery">My_Gallery</string>
 </resources>

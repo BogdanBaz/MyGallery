@@ -1,7 +1,6 @@
-package com.example.unsplash_connection.api;
+package com.example.api.retrofit;
 
-import com.example.unsplash_connection.HeaderInterceptor;
-import com.example.unsplash_connection.UnsplashAuthorizationData;
+import com.example.api.data.UnsplashAuthorizationData;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import okhttp3.OkHttpClient;
@@ -28,7 +27,6 @@ private static Retrofit retrofit = null;
 
 
     public static ApiInterface getInterface() {
-        ApiInterface apiInterface = getRetrofit().create(ApiInterface.class);
-        return apiInterface;
+        return getRetrofit().create(ApiInterface.class);
     }
 }
