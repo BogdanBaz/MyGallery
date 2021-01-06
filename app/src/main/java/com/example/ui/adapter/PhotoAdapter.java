@@ -1,6 +1,7 @@
 package com.example.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mygallery.R;
 import com.example.api.responses.ImagesResponse;
+import com.example.ui.screens.onephotodisplay.OnePhotoViewer;
 
 import java.util.List;
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder> {
 
-    private List<ImagesResponse> imagesResponses;
-    private Context context;
+    private final List<ImagesResponse> imagesResponses;
+    private final Context context;
 
     public PhotoAdapter(List<ImagesResponse> imagesResponses, Context context) {
         this.imagesResponses = imagesResponses;
@@ -36,6 +38,17 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ImagesResponse imagesResponse = imagesResponses.get(position);
+
+// ON CLICK ITEM
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, OnePhotoViewer.class)
+                        .putExtra("selectedPhoto", imagesResponse.getUrls().getRegular()));
+            }
+        });
+
+
         Glide.with(context)
                 .load(imagesResponse.getUrls().getRegular())
                 .into(holder.imageView);

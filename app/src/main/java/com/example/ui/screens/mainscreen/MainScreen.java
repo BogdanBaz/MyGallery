@@ -15,11 +15,11 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     ImageButton btnSearch;
     EditText editText;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         btnSearch = findViewById(R.id.btnSearch);
         editText = findViewById(R.id.editTextSrch);
         btnSearch.setOnClickListener(this);
