@@ -2,17 +2,17 @@ package com.example.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.MotionEvent;
+import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.api.responses.ImagesResponse;
 import com.example.api.retrofit.ApiClient;
 import com.example.mygallery.R;
+import com.example.ui.screens.onephotodisplay.OnePhotoViewer;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PhotoScrollViewer {
+public class PhotoScrollViewer implements ClickPhotoCallback {
 
     private int page = 1;
     private final int perPage = 20;
@@ -42,6 +42,11 @@ public class PhotoScrollViewer {
         recyclerView.setLayoutManager(layoutManager);
     }
 
+    @Override
+    public void onPhotoClick(ImagesResponse imagesResponse) {
+        context.startActivity(new Intent(context, OnePhotoViewer.class)
+                .putExtra("selectedPhoto", imagesResponse.getUrls().getRegular()));
+    }
 
     public void getAllImages(int page) {
         Call<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, perPage);
@@ -53,7 +58,7 @@ public class PhotoScrollViewer {
                     message = "Page " + page + " is loaded";
                     imagesResponses = response.body();
                     if (page == 1) {
-                        photoAdapter = new PhotoAdapter(imagesResponses, context);
+                        photoAdapter = new PhotoAdapter(imagesResponses, PhotoScrollViewer.this);
                         recyclerView.setAdapter(photoAdapter);
                         pageScrolling();
                     } else {
