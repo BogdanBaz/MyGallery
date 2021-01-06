@@ -2,4 +2,6 @@
     <string name="app_name">MyGallery</string>
     <string name="todo">TODO</string>
     <string name="my_gallery">My_Gallery</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
 </resources>
