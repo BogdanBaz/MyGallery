@@ -14,4 +14,11 @@ public class Urls {
     public String getRegular() {
         return regular;
     }
+    @SerializedName("small")
+    @Expose
+    private String small;
+    public String getSmall() {
+        return small;
+    }
+
 }
