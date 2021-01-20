@@ -3,6 +3,7 @@ package com.example.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -20,7 +21,6 @@ import com.example.ui.screens.onephotodisplay.OnePhotoViewer;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLOutput;
 import java.util.List;
 
 import retrofit2.Call;
@@ -35,7 +35,6 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
     private final GridLayoutManager layoutManager;
     private final RecyclerView recyclerView;
     private List<ImagesResponse> imagesResponses;
-    //  private SearchingImages searchingImages;
     private String query;
     Context context;
     private int pastVisibleItems, visibleItemCount, totalItemCount, previousTotal = 0;
@@ -64,8 +63,12 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
 
     @Override
     public void onPhotoClick(ImagesResponse imagesResponse) {
-        context.startActivity(new Intent(context, OnePhotoViewer.class)
-                .putExtra("selectedPhoto", imagesResponse.getUrls().getRegular()));
+        Intent intent = new Intent(context, OnePhotoViewer.class);
+        Bundle extras = new Bundle();
+        extras.putString("selectedPhoto", imagesResponse.getUrls().getRegular());
+        extras.putString("selectedPhotoId", imagesResponse.getId());
+        intent.putExtras(extras);
+        context.startActivity(intent);
     }
 
     public void getAllImages(int page) {
@@ -186,27 +189,12 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
 
         });
         Log.d(TAG, Boolean.toString(isLoading));
-     /*   /////////////////////////
-        if (!isLoading && (totalItemCount - visibleItemCount) > (pastVisibleItems + perPage)) {
-            Log.d(TAG, "WTF__  totatlItem " + totalItemCount + "  VisiblITcOunt " + visibleItemCount +
-                    "  PASTvisibl " + pastVisibleItems + "   PerPage  " + perPage);
-        }
-        //////////////////////////////////////////////*/
     }
 
     public void resetViewing() {
         layoutManager.removeAllViews();
         imagesResponses.clear();
-        //  layoutManager.generateDefaultLayoutParams();
         this.previousTotal = 0;
         this.page = 1;
-      /*  layoutManager = new GridLayoutManager(context, 2);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
-        imagesResponses.clear();*/
-        /*    isLoading = true;*/
-     /*   this.pastVisibleItems = 0;
-        this.visibleItemCount = 0;
-        this.totalItemCount = 0;*/
     }
 }
