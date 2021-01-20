@@ -123,7 +123,8 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
             searchingImages.enqueue(new Callback<SearchingImages>() {
                 @Override
                 public void onResponse(Call<SearchingImages> call, Response<SearchingImages> response) {
-                    /*if (response.isSuccessful())*/ {
+                    /*if (response.isSuccessful())*/
+                    {
                         progressBar.setVisibility(View.GONE);
                         imagesResponses = response.body().getResults();
                         if (page == 1) {
