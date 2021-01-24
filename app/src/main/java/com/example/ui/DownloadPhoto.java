@@ -29,7 +29,7 @@ public class DownloadPhoto extends OnePhotoViewer {
         this.selectedPhotoId = selectedPhotoId;
     }
 
-    public   void downloadPhoto(Context context) {
+    public   void download(Context context) {
 
         Glide.with(context).asBitmap().load(selectedPhotoUrl).into(new CustomTarget<Bitmap>() {
             @Override
@@ -55,4 +55,5 @@ public class DownloadPhoto extends OnePhotoViewer {
             }
         });
     }
+
 }

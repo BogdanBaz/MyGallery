@@ -3,6 +3,7 @@ package com.example.ui.screens.onephotodisplay;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -17,6 +18,7 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.example.mygallery.R;
 import com.example.ui.DownloadPhoto;
+import com.example.ui.SharePhoto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +27,8 @@ import java.net.URL;
 
 public class OnePhotoViewer extends AppCompatActivity implements View.OnClickListener {
 
-    private String selectedPhotoUrl , selectedPhotoId;
+    private String selectedPhotoUrl, selectedPhotoId;
     private Button btnShare, btnDownload;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,12 +76,13 @@ public class OnePhotoViewer extends AppCompatActivity implements View.OnClickLis
 
             case R.id.btnDownload:
                 DownloadPhoto downloadPhoto = new DownloadPhoto(selectedPhotoUrl, selectedPhotoId);
-                downloadPhoto.downloadPhoto(this);
+                downloadPhoto.download(this);
                 Toast.makeText(this, "Downloading...", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.btnShare:
-                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
+                SharePhoto sharePhoto = new SharePhoto(selectedPhotoUrl);
+                sharePhoto.share(this);
                 break;
         }
     }
