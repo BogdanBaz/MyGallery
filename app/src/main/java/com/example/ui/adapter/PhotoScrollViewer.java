@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -72,8 +73,6 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
     }
 
     public void getAllImages(int page) {
-
-
         if (page < MAX_PAGE) {
             progressBar.setVisibility(View.VISIBLE);
             Call<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, perPage);
@@ -159,13 +158,10 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-
                 super.onScrolled(recyclerView, dx, dy);
-
                 visibleItemCount = layoutManager.getChildCount();
                 totalItemCount = layoutManager.getItemCount();
                 pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-
                 if (dy > 0) {
                     if (isLoading) {
                         if (totalItemCount > previousTotal)
@@ -174,7 +170,6 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
                         Log.d(TAG, "_IN dy > 0");
                     }
                 }
-
                 if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItems + perPage)) {
                     page++;
                     isLoading = true;
@@ -187,7 +182,6 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
 
                 }
             }
-
         });
         Log.d(TAG, Boolean.toString(isLoading));
     }
