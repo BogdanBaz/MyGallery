@@ -25,6 +25,8 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -76,13 +78,13 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
     public void getAllImages(int page) {
         progressBar.setVisibility(View.VISIBLE);
 
-        Observable<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, perPage);
+        Single<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, perPage);
         imagesResponse.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<ImagesResponse>>() {
+                .subscribe(new SingleObserver<List<ImagesResponse>>() {
 
                     @Override
-                    public void onSubscribe(Disposable d) {
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
                         if (page > MAX_PAGE) {
                             Toast.makeText(context, "End of list. Maybe Y'll search something?..", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
@@ -91,25 +93,20 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
                     }
 
                     @Override
-                    public void onNext(@NotNull List<ImagesResponse> imgResponse) {
+                    public void onSuccess(@io.reactivex.annotations.NonNull List<ImagesResponse> imgResponse) {
                         imagesResponses = imgResponse;
                         if (page == 1) {
                             setAdapter();
                         } else {
                             photoAdapter.addImages(imagesResponses);
                         }
+                        progressBar.setVisibility(View.GONE);
                         pageScrolling();
                     }
 
                     @Override
-                    public void onError(Throwable t) {
-                        Log.d(TAG, "ERROR:  " + t.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "COMPLETED!");
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.d(TAG, "ERROR:  " + e.getMessage());
                     }
                 });
     }
@@ -118,11 +115,10 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
         this.query = query;
         progressBar.setVisibility(View.VISIBLE);
 
-        Observable<SearchingImages> imagesResponse = ApiClient.getInterface().searchImages(page, perPage, query);
-        ;
+        Single<SearchingImages> imagesResponse = ApiClient.getInterface().searchImages(page, perPage, query);
         imagesResponse.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<SearchingImages>() {
+                .subscribe(new SingleObserver<SearchingImages>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -134,25 +130,20 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
                     }
 
                     @Override
-                    public void onNext(@io.reactivex.annotations.NonNull SearchingImages searchingImages) {
+                    public void onSuccess(@io.reactivex.annotations.NonNull SearchingImages searchingImages) {
                         imagesResponses = searchingImages.getResults();
                         if (page == 1) {
                             setAdapter();
                         } else {
                             photoAdapter.addImages(imagesResponses);
                         }
+                        progressBar.setVisibility(View.GONE);
                         pageScrolling();
                     }
 
                     @Override
                     public void onError(Throwable t) {
                         Log.d(TAG, "ERROR:  " + t.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "COMPLETED!");
                     }
                 });
 
