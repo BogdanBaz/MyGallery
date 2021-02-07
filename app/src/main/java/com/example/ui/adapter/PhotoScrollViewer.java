@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,9 +23,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class PhotoScrollViewer implements ClickPhotoCallback {
 
@@ -73,85 +74,93 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
     }
 
     public void getAllImages(int page) {
-        if (page < MAX_PAGE) {
-            progressBar.setVisibility(View.VISIBLE);
-            Call<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, perPage);
-            imagesResponse.enqueue(new Callback<List<ImagesResponse>>() {
-                @Override
-                public void onResponse(@NotNull Call<List<ImagesResponse>> call, @NotNull Response<List<ImagesResponse>> response) {
-                    /*if (response.isSuccessful())*/
-                    {
-                        progressBar.setVisibility(View.GONE);
-                        imagesResponses = response.body();
+        progressBar.setVisibility(View.VISIBLE);
+
+        Observable<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, perPage);
+        imagesResponse.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<ImagesResponse>>() {
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        if (page > MAX_PAGE) {
+                            Toast.makeText(context, "End of list. Maybe Y'll search something?..", Toast.LENGTH_LONG).show();
+                            progressBar.setVisibility(View.GONE);
+                            d.dispose();
+                        }
+                    }
+
+                    @Override
+                    public void onNext(@NotNull List<ImagesResponse> imgResponse) {
+                        imagesResponses = imgResponse;
                         if (page == 1) {
-                            photoAdapter = new PhotoAdapter(imagesResponses, PhotoScrollViewer.this);
-                            recyclerView.setAdapter(photoAdapter);
-                            pageScrolling();
+                            setAdapter();
                         } else {
                             photoAdapter.addImages(imagesResponses);
                         }
+                        pageScrolling();
+                    }
 
-                    }/* else {
-                    Toast.makeText(context, "Something going wrong...", Toast.LENGTH_SHORT).show();
-                }*/
-                    pageScrolling();
-                }
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.d(TAG, "ERROR:  " + t.getMessage());
+                    }
 
-                @Override
-                public void onFailure(@NotNull Call<List<ImagesResponse>> call, @NotNull Throwable t) {
-                    String message = t.getLocalizedMessage();
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        Log.d(TAG, "totalItem " + totalItemCount + " , prevTotal " + previousTotal + " , Page " + page);
-
-        if (page == MAX_PAGE)
-            Toast.makeText(context, "End of list. Maybe Y'll search something?..", Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onComplete() {
+                        progressBar.setVisibility(View.GONE);
+                        Log.d(TAG, "COMPLETED!");
+                    }
+                });
     }
 
-
     public void searchImages(int page, String query) {
-        if (page < MAX_PAGE) {
+        this.query = query;
+        progressBar.setVisibility(View.VISIBLE);
 
-            this.query = query;
+        Observable<SearchingImages> imagesResponse = ApiClient.getInterface().searchImages(page, perPage, query);
+        ;
+        imagesResponse.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<SearchingImages>() {
 
-            progressBar.setVisibility(View.VISIBLE);
-            Call<SearchingImages> searchingImages = ApiClient.getInterface().searchImages(page, perPage, query);
-            searchingImages.enqueue(new Callback<SearchingImages>() {
-                @Override
-                public void onResponse(Call<SearchingImages> call, Response<SearchingImages> response) {
-                    /*if (response.isSuccessful())*/
-                    {
-                        progressBar.setVisibility(View.GONE);
-                        imagesResponses = response.body().getResults();
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        if (page > MAX_PAGE) {
+                            Toast.makeText(context, "End of list. Search something ELSE ...", Toast.LENGTH_LONG).show();
+                            progressBar.setVisibility(View.GONE);
+                            d.dispose();
+                        }
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull SearchingImages searchingImages) {
+                        imagesResponses = searchingImages.getResults();
                         if (page == 1) {
-                            photoAdapter = new PhotoAdapter(imagesResponses, PhotoScrollViewer.this);
-                            recyclerView.setAdapter(photoAdapter);
-                            pageScrolling();
+                            setAdapter();
                         } else {
                             photoAdapter.addImages(imagesResponses);
                         }
-                    }/* else {
-                        Toast.makeText(context, "Something going wrong..." + response.message(), Toast.LENGTH_SHORT).show();
-                    }*/
-                    pageScrolling();
+                        pageScrolling();
+                    }
 
-                    Log.d(TAG, "IN SEARCH _  totalItem " + totalItemCount + " , prevTotal " + previousTotal + " , Page " + page);
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.d(TAG, "ERROR:  " + t.getMessage());
+                    }
 
-                }
+                    @Override
+                    public void onComplete() {
+                        progressBar.setVisibility(View.GONE);
+                        Log.d(TAG, "COMPLETED!");
+                    }
+                });
 
-                @Override
-                public void onFailure(Call<SearchingImages> call, Throwable t) {
-                    String message = t.getLocalizedMessage();
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+    }
 
-        if (page == MAX_PAGE)
-            Toast.makeText(context, "End of list. Maybe Y'll search something else?..", Toast.LENGTH_LONG).show();
+    private void setAdapter() {
+        photoAdapter = new PhotoAdapter(imagesResponses, PhotoScrollViewer.this);
+        recyclerView.setAdapter(photoAdapter);
     }
 
     public void pageScrolling() {
@@ -167,7 +176,6 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
                         if (totalItemCount > previousTotal)
                             isLoading = false;
                         previousTotal = totalItemCount;
-                        Log.d(TAG, "_IN dy > 0");
                     }
                 }
                 if (!isLoading && (totalItemCount - visibleItemCount) <= (pastVisibleItems + perPage)) {
@@ -183,12 +191,14 @@ public class PhotoScrollViewer implements ClickPhotoCallback {
                 }
             }
         });
-        Log.d(TAG, Boolean.toString(isLoading));
     }
 
     public void resetViewing() {
-        layoutManager.removeAllViews();
-        imagesResponses.clear();
+
+        if (photoAdapter != null) {
+            photoAdapter.clearData();
+        }
+
         this.previousTotal = 0;
         this.page = 1;
     }

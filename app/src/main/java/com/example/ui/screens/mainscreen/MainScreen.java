@@ -2,6 +2,7 @@ package com.example.ui.screens.mainscreen;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,20 +36,35 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         btnCancel.setOnClickListener(this);
         photoScrollViewer = new PhotoScrollViewer(MainScreen.this);
 
+        if (getIntent().hasExtra("query")) {
+
+            String searchRequest = getIntent().getStringExtra("query");
+
+            editText.setText(searchRequest);
+            editText.setVisibility(View.VISIBLE);
+            btnSearch.setVisibility(View.INVISIBLE);
+            btnCancel.setVisibility(View.VISIBLE);
+
+            performSearch(searchRequest);
+
+        } else {
+            photoScrollViewer.getAllImages(1);
+        }
+
+
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    performSearch();
+                    performSearch(editText.getText().toString());
                     return true;
                 }
                 return false;
             }
         });
 
-        photoScrollViewer.getAllImages(1);
 
     }
 
@@ -83,13 +99,18 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
 
     }
 
-    private void performSearch() {
-        if (!editText.getText().toString().equals("")) {
-            Toast.makeText(this, "Searching " + " ' " + editText.getText().toString()+ " ' ...", Toast.LENGTH_SHORT ).show();
-            photoScrollViewer.resetViewing();
-            photoScrollViewer.setIsSearch(true);
-            photoScrollViewer.searchImages(1, editText.getText().toString());
-        }
+    private void performSearch(String searchRequest) {
+        //if (!editText.getText().toString().equals("")) {
+        Toast.makeText(this, "Searching " + " ' " + searchRequest + " ' ...", Toast.LENGTH_SHORT).show();
+        photoScrollViewer.resetViewing();
+        photoScrollViewer.setIsSearch(true);
+        photoScrollViewer.searchImages(1, searchRequest);
+        //  }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        photoScrollViewer.resetViewing();
+    }
 }

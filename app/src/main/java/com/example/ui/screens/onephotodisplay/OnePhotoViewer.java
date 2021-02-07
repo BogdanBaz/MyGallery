@@ -75,6 +75,7 @@ public class OnePhotoViewer extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.btnDownload:
+//architecture AAC by view model
                 DownloadPhoto downloadPhoto = new DownloadPhoto(selectedPhotoUrl, selectedPhotoId);
                 downloadPhoto.download(this);
                 Toast.makeText(this, "Downloading...", Toast.LENGTH_SHORT).show();

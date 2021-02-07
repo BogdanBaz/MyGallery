@@ -5,20 +5,22 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiClient {
 
-private static Retrofit retrofit = null;
+    private static Retrofit retrofit = null;
 
-        public static Retrofit getRetrofit() {
+    public static Retrofit getRetrofit() {
         if (retrofit == null) {
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(new HeaderInterceptor(UnsplashAuthorizationData.getAccessKey())).build();
             retrofit = new Retrofit.Builder()
                     .baseUrl(UnsplashAuthorizationData.getBaseUrl())
                     .client(client)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

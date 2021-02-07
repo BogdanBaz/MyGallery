@@ -48,6 +48,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder
         notifyItemRangeChanged(size, imagesResponses.size());
     }
 
+    public void clearData(){
+        imagesResponses.clear();
+        // message of  data changed
+        notifyDataSetChanged();
+    }
+
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private final WeakReference<ClickPhotoCallback> callback;
         private final ImageView imageView;
