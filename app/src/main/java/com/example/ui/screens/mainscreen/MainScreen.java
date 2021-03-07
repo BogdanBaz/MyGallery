@@ -2,7 +2,6 @@ package com.example.ui.screens.mainscreen;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -48,7 +47,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
             performSearch(searchRequest);
 
         } else {
-            photoScrollViewer.getAllImages(1);
+            photoScrollViewer.getAllImages();
         }
 
 
@@ -87,7 +86,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
 
                 photoScrollViewer.resetViewing();
                 photoScrollViewer.setIsSearch(false);
-                photoScrollViewer.getAllImages(1);
+                photoScrollViewer.getAllImages();
 
                 editText.getText().clear();
                 editText.setVisibility(View.INVISIBLE);
@@ -104,7 +103,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         Toast.makeText(this, "Searching " + " ' " + searchRequest + " ' ...", Toast.LENGTH_SHORT).show();
         photoScrollViewer.resetViewing();
         photoScrollViewer.setIsSearch(true);
-        photoScrollViewer.searchImages(1, searchRequest);
+        photoScrollViewer.searchImages(searchRequest);
         //  }
     }
 

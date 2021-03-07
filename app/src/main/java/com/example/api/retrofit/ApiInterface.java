@@ -15,8 +15,8 @@ public interface ApiInterface {
     Single<List<ImagesResponse>> getAllImages(@Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @GET("search/photos")
-    Single<SearchingImages> searchImages(@Query("page") Integer page,
-                                             @Query("per_page") Integer perPage, @Query("query") String query);
+    Single<SearchingImages> searchImages(@Query("page") Integer page, @Query("per_page") Integer perPage,
+                                                            @Query("query") String query);
 
 
 }

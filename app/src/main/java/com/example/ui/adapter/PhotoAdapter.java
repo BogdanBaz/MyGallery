@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder> {
 
-    private final List<ImagesResponse> imagesResponses;
+    private  List<ImagesResponse> imagesResponses;
     private final ClickPhotoCallback callback;
 
     public PhotoAdapter(List<ImagesResponse> imagesResponses, ClickPhotoCallback callback) {
@@ -56,7 +56,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private final WeakReference<ClickPhotoCallback> callback;
-        private final ImageView imageView;
+        private final ImageView    imageView;
 
         public static MyViewHolder newInstance(@NonNull ViewGroup parent, ClickPhotoCallback callback) {
             View view = LayoutInflater.from(parent.getContext())
