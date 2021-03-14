@@ -10,13 +10,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mygallery.R;
 import com.example.ui.adapter.PhotoScrollViewer;
+
+import static com.example.ui.adapter.PhotoScrollViewer.showMessage;
 
 public class MainScreen extends AppCompatActivity implements View.OnClickListener {
     ImageButton btnSearch, btnCancel;
@@ -99,12 +100,10 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     }
 
     private void performSearch(String searchRequest) {
-        //if (!editText.getText().toString().equals("")) {
-        Toast.makeText(this, "Searching " + " ' " + searchRequest + " ' ...", Toast.LENGTH_SHORT).show();
+        showMessage( "Searching " + " ' " + searchRequest + " ' ...");
         photoScrollViewer.resetViewing();
         photoScrollViewer.setIsSearch(true);
         photoScrollViewer.searchImages(searchRequest);
-        //  }
     }
 
     @Override

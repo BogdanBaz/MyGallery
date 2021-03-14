@@ -10,6 +10,8 @@ import com.example.api.responses.SearchingImages;
 import com.example.api.retrofit.ApiClient;
 import com.example.ui.adapter.PhotoScrollViewer;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.example.ui.adapter.PhotoScrollViewer.TAG;
+import static com.example.ui.adapter.PhotoScrollViewer.showMessage;
 
 public class SearchListViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -71,8 +74,9 @@ public class SearchListViewModel extends ViewModel {
                     }
 
                     @Override
-                    public void onError(Throwable t) {
+                    public void onError(@NotNull Throwable t) {
                         Log.d(TAG, "ERROR:  " + t.getMessage());
+                        showMessage("Network error...");
                     }
                 });
     }

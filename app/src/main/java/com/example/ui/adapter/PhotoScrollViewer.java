@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -34,7 +35,7 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
     @SuppressLint("StaticFieldLeak")
     private final RecyclerView recyclerView;
     @SuppressLint("StaticFieldLeak")
-    Context context;
+    private static Context context;
     private boolean isSearch = false;
     @SuppressLint("StaticFieldLeak")
     ProgressBar progressBar;
@@ -71,6 +72,10 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
         context.startActivity(intent);
     }
 
+    public static void showMessage(String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
 
     public void getAllImages() {
         if (srchListViewModel != null) {
@@ -100,16 +105,21 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
     public void searchImages(String query) {
         imgListViewModel.removeObservers((AppCompatActivity) context);
         imgListViewModel.clearData();
+
         srchListViewModel = new ViewModelProvider((AppCompatActivity) context).get(SearchListViewModel.class);
 
         observer = new Observer<SearchingImages>() {
             @Override
             public void onChanged(SearchingImages searchingImages) {
-
                 if (photoAdapter == null) {
                     if (searchingImages == null)
                         return;
+                    else {
                     setAdapter(searchingImages.getResults());
+                        if (searchingImages.getResults().size() == 0) {
+                            showMessage("No results for " + query);
+                        }
+                    }
                 } else {
                     photoAdapter.addImages(searchingImages.getResults());
                     progressBar.setVisibility(View.GONE);
@@ -139,7 +149,7 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
                 if (!isSearch) {
                     Log.d(TAG, "!!! SET Page in SCROLL % " + nextPage);
                     imgListViewModel.setPage(nextPage);
-                } else if (isSearch) {
+                } else {
                     Log.d(TAG, "!!! SET Page in SCROLL % " + nextPage);
                     srchListViewModel.setPage(nextPage);
                 }

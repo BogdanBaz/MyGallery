@@ -18,6 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.example.ui.adapter.PhotoScrollViewer.TAG;
+import static com.example.ui.adapter.PhotoScrollViewer.showMessage;
 
 public class ImagesListViewModel extends LiveData<List<ImagesResponse>> {
 
@@ -51,7 +52,8 @@ public class ImagesListViewModel extends LiveData<List<ImagesResponse>> {
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "ERROR:  " + e.getMessage());
+                        Log.d(TAG, "ERROR:  " + e.toString());
+                        showMessage("Network error...");
                     }
                 });
     }
