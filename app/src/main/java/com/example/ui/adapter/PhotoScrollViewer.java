@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -30,7 +31,7 @@ import java.util.List;
 public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
 
     public static final int perPage = 20;
-    PhotoAdapter photoAdapter;
+    public static PhotoAdapter photoAdapter;
     private final GridLayoutManager layoutManager;
     @SuppressLint("StaticFieldLeak")
     private final RecyclerView recyclerView;
@@ -44,6 +45,7 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
 
     private ImagesListViewModel imgListViewModel;
     private SearchListViewModel srchListViewModel;
+    private EndlessRecyclerOnScrollListener onScrollListener;
 
     public boolean getIsSearch() {
         return isSearch;
@@ -54,12 +56,27 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
     }
 
     public PhotoScrollViewer(Context context) {
-        this.context = context;
+        PhotoScrollViewer.context = context;
         recyclerView = ((Activity) context).findViewById(R.id.recyclerView);
         progressBar = ((Activity) context).findViewById(R.id.progressBar);
-        layoutManager = new GridLayoutManager(context, 2);
+        this.layoutManager = getLayoutManager();
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+    }
+
+    private GridLayoutManager getLayoutManager() {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
+        int numOfColumns = (int) (screenWidthDp / 250 + 0.5);
+        return new GridLayoutManager(context, numOfColumns);
+    }
+
+    public int getCurrentPage() {
+        return onScrollListener.getPage();
+    }
+
+    public void setCurrentPage(int page) {
+        onScrollListener.setPage(page);
     }
 
     @Override
@@ -78,10 +95,6 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
 
 
     public void getAllImages() {
-        if (srchListViewModel != null) {
-            srchListViewModel.getSearchingResponsesList().removeObserver(observer);
-            srchListViewModel.clearData();
-        }
         imgListViewModel = new ImagesListViewModel();
 
         observer = new Observer<List<ImagesResponse>>() {
@@ -97,15 +110,16 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
         };
 
         imgListViewModel.observe((AppCompatActivity) context, observer);
-        Log.d(TAG, "beforeApiCall  phAdapter is- " + photoAdapter);
-        imgListViewModel.setPage(1);
+
+        if (photoAdapter == null) {
+            imgListViewModel.setPage(1);
+        } else {
+            setAdapter(null);
+        }
         pageScrolling();
     }
 
     public void searchImages(String query) {
-        imgListViewModel.removeObservers((AppCompatActivity) context);
-        imgListViewModel.clearData();
-
         srchListViewModel = new ViewModelProvider((AppCompatActivity) context).get(SearchListViewModel.class);
 
         observer = new Observer<SearchingImages>() {
@@ -115,9 +129,9 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
                     if (searchingImages == null)
                         return;
                     else {
-                    setAdapter(searchingImages.getResults());
+                        setAdapter(searchingImages.getResults());
                         if (searchingImages.getResults().size() == 0) {
-                            showMessage("No results for " + query);
+                            showMessage("No results for " + "\"" + query + "\"");
                         }
                     }
                 } else {
@@ -128,37 +142,52 @@ public class PhotoScrollViewer extends ViewModel implements ClickPhotoCallback {
         };
         srchListViewModel.setQuery(query);
         srchListViewModel.getSearchingResponsesList().observe((AppCompatActivity) context, observer);
-        Log.d(TAG, "beforeApiCall   phAdapter is- " + photoAdapter);
-        srchListViewModel.setPage(1);
+
+        if (photoAdapter == null) {
+            srchListViewModel.setPage(1);
+        } else {
+            setAdapter(null);
+        }
         pageScrolling();
     }
 
     private void setAdapter(List<ImagesResponse> imgResponse) {
-        photoAdapter = new PhotoAdapter(imgResponse, PhotoScrollViewer.this);
+        if (imgResponse != null) {
+            photoAdapter = new PhotoAdapter(imgResponse, PhotoScrollViewer.this);
+        }
         recyclerView.swapAdapter(photoAdapter, true);
-        Log.d(TAG, "setAdapter");
     }
 
-    public void pageScrolling() {
 
-        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
+    public void pageScrolling() {
+        onScrollListener = new EndlessRecyclerOnScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int nextPage) {
                 progressBar.setVisibility(View.VISIBLE);
 
+                Log.d(TAG, "!!! SET Page in SCROLL % " + nextPage);
                 if (!isSearch) {
-                    Log.d(TAG, "!!! SET Page in SCROLL % " + nextPage);
                     imgListViewModel.setPage(nextPage);
                 } else {
-                    Log.d(TAG, "!!! SET Page in SCROLL % " + nextPage);
                     srchListViewModel.setPage(nextPage);
                 }
             }
-        });
+        };
+        recyclerView.addOnScrollListener(onScrollListener);
     }
 
     public void resetViewing() {
         recyclerView.clearOnScrollListeners();
+
+        if (imgListViewModel != null) {
+            imgListViewModel.removeObservers((AppCompatActivity) context);
+            imgListViewModel.clearData();
+        }
+
+        if (srchListViewModel != null) {
+            srchListViewModel.getSearchingResponsesList().removeObservers((AppCompatActivity) context);
+            srchListViewModel.clearData();
+        }
 
         if (photoAdapter != null) {
             photoAdapter.clearData();

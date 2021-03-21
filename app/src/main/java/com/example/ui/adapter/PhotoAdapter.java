@@ -15,7 +15,8 @@ import com.example.mygallery.R;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder> {
+public  class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder> {
+
 
     private  List<ImagesResponse> imagesResponses;
     private final ClickPhotoCallback callback;
@@ -23,6 +24,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder
     public PhotoAdapter(List<ImagesResponse> imagesResponses, ClickPhotoCallback callback) {
         this.imagesResponses = imagesResponses;
         this.callback = callback;
+    }
+
+    public  List<ImagesResponse> getImagesResponses() {
+        return imagesResponses;
     }
 
     @NonNull
@@ -48,7 +53,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder
         notifyItemRangeChanged(size, imagesResponses.size());
     }
 
-    public void clearData(){
+    public void clearData() {
         imagesResponses.clear();
         // message of  data changed
         notifyDataSetChanged();
@@ -56,7 +61,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private final WeakReference<ClickPhotoCallback> callback;
-        private final ImageView    imageView;
+        private final ImageView imageView;
 
         public static MyViewHolder newInstance(@NonNull ViewGroup parent, ClickPhotoCallback callback) {
             View view = LayoutInflater.from(parent.getContext())

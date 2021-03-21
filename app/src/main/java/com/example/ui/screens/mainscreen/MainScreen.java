@@ -3,6 +3,7 @@ package com.example.ui.screens.mainscreen;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,24 +18,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.mygallery.R;
 import com.example.ui.adapter.PhotoScrollViewer;
 
+import org.jetbrains.annotations.NotNull;
+
+import static com.example.ui.adapter.PhotoScrollViewer.photoAdapter;
 import static com.example.ui.adapter.PhotoScrollViewer.showMessage;
 
 public class MainScreen extends AppCompatActivity implements View.OnClickListener {
     ImageButton btnSearch, btnCancel;
     EditText editText;
     PhotoScrollViewer photoScrollViewer;
+    private String searchRequest;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         btnSearch = findViewById(R.id.btnSearch);
         btnCancel = findViewById(R.id.btnCancel);
         editText = findViewById(R.id.editTextSrch);
         btnSearch.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
-        photoScrollViewer = new PhotoScrollViewer(MainScreen.this);
 
         if (getIntent().hasExtra("query")) {
 
@@ -46,11 +50,25 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
             btnCancel.setVisibility(View.VISIBLE);
 
             performSearch(searchRequest);
-
-        } else {
-            photoScrollViewer.getAllImages();
         }
 
+        photoScrollViewer = new PhotoScrollViewer(MainScreen.this);
+
+        if (savedInstanceState != null) {
+
+            if (savedInstanceState.getBoolean("isSearch")) {
+                photoScrollViewer.setIsSearch(true);
+                photoScrollViewer.searchImages(savedInstanceState.getString("searchRequest"));
+                editText.setVisibility(View.VISIBLE);
+                btnSearch.setVisibility(View.INVISIBLE);
+                btnCancel.setVisibility(View.VISIBLE);
+            } else {
+                photoScrollViewer.getAllImages();
+            }
+            photoScrollViewer.setCurrentPage(savedInstanceState.getInt("currentPage"));
+
+        } else
+            photoScrollViewer.getAllImages();
 
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -64,8 +82,6 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
                 return false;
             }
         });
-
-
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -100,7 +116,8 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     }
 
     private void performSearch(String searchRequest) {
-        showMessage( "Searching " + " ' " + searchRequest + " ' ...");
+        this.searchRequest = searchRequest;
+        showMessage("Searching " + "\" " + searchRequest + " \"...");
         photoScrollViewer.resetViewing();
         photoScrollViewer.setIsSearch(true);
         photoScrollViewer.searchImages(searchRequest);
@@ -109,6 +126,15 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        photoScrollViewer.resetViewing();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NotNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt("currentPage", photoScrollViewer.getCurrentPage());
+        savedInstanceState.putBoolean("isSearch", photoScrollViewer.getIsSearch());
+        if (photoScrollViewer.getIsSearch()) {
+            savedInstanceState.putString("searchRequest", searchRequest);
+        }
     }
 }

@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect
-public class ImagesResponse implements Serializable {
+public class ImagesResponse  {
     @JsonProperty("urls")
     private Urls urls;
     @JsonProperty("id")

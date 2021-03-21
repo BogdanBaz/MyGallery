@@ -27,14 +27,7 @@ public class SearchListViewModel extends ViewModel {
     private int page;
     private String query;
 
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        disposables.dispose();
-    }
-
-    private final MutableLiveData<SearchingImages> searchingResponsesList;
+    private  MutableLiveData<SearchingImages> searchingResponsesList;
 
     public SearchListViewModel() {
         searchingResponsesList = new MutableLiveData<>();
@@ -51,6 +44,8 @@ public class SearchListViewModel extends ViewModel {
 
     public void clearData() {
         searchingResponsesList.postValue(null);
+        searchingResponsesList = new MutableLiveData<>();
+        disposables.dispose();
     }
 
     public LiveData<SearchingImages> getSearchingResponsesList() {

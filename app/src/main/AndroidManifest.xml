@@ -19,7 +19,8 @@
         android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
         <activity android:name="com.example.ui.screens.onephotodisplay.OnePhotoViewer">
         </activity>
-        <activity android:name="com.example.ui.screens.splashscreen.SplashScreen">
+        <activity android:name="com.example.ui.screens.splashscreen.SplashScreen"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
