@@ -2,35 +2,31 @@ package com.example.api.viewModel;
 
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.api.responses.SearchingImages;
 import com.example.api.retrofit.ApiClient;
-import com.example.ui.adapter.PhotoScrollViewer;
+import com.example.ui.screens.mainscreen.MainScreen;
 
 import org.jetbrains.annotations.NotNull;
 
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.example.ui.adapter.PhotoScrollViewer.TAG;
-import static com.example.ui.adapter.PhotoScrollViewer.showMessage;
+import static com.example.ui.screens.mainscreen.MainScreen.TAG;
+import static com.example.ui.screens.mainscreen.MainScreen.showMessage;
 
-public class SearchListViewModel extends ViewModel {
-    private final CompositeDisposable disposables = new CompositeDisposable();
+public class SearchList {
     private int page;
     private String query;
 
-    private  MutableLiveData<SearchingImages> searchingResponsesList;
+    private final MutableLiveData<SearchingImages> searchingResponsesList;
 
-    public SearchListViewModel() {
-        searchingResponsesList = new MutableLiveData<>();
+    public SearchList(MutableLiveData<SearchingImages> liveData) {
+        searchingResponsesList = liveData;
     }
 
     public void setQuery(String query) {
@@ -44,17 +40,11 @@ public class SearchListViewModel extends ViewModel {
 
     public void clearData() {
         searchingResponsesList.postValue(null);
-        searchingResponsesList = new MutableLiveData<>();
-        disposables.dispose();
-    }
-
-    public LiveData<SearchingImages> getSearchingResponsesList() {
-        return searchingResponsesList;
     }
 
     public void apiCall() {
 
-        Single<SearchingImages> imagesResponse = ApiClient.getInterface().searchImages(page, PhotoScrollViewer.perPage, query);
+        Single<SearchingImages> imagesResponse = ApiClient.getInterface().searchImages(page, MainScreen.perPage, query);
         imagesResponse.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<SearchingImages>() {

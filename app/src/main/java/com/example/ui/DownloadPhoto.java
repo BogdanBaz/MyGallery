@@ -28,9 +28,9 @@ public class DownloadPhoto extends OnePhotoViewer {
         this.selectedPhotoUrl = selectedPhotoUrl;
         this.selectedPhotoId = selectedPhotoId;
     }
-// in view model
-    public   void download(Context context) {
 
+
+    public   void download(Context context) {
         Glide.with(context).asBitmap().load(selectedPhotoUrl).into(new CustomTarget<Bitmap>() {
             @Override
             public void onResourceReady(@NotNull Bitmap bitmap, Transition<? super Bitmap> transition) {
@@ -47,7 +47,6 @@ public class DownloadPhoto extends OnePhotoViewer {
                 } catch(IOException e) {
                     e.printStackTrace();
                 }
-                // by live data
                 Toast.makeText(context, "Image Saved", Toast.LENGTH_LONG).show();
             }
 

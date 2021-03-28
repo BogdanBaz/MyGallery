@@ -2,11 +2,11 @@ package com.example.api.viewModel;
 
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.api.responses.ImagesResponse;
 import com.example.api.retrofit.ApiClient;
-import com.example.ui.adapter.PhotoScrollViewer;
+import com.example.ui.screens.mainscreen.MainScreen;
 
 import java.util.List;
 
@@ -17,12 +17,18 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.example.ui.adapter.PhotoScrollViewer.TAG;
-import static com.example.ui.adapter.PhotoScrollViewer.showMessage;
+import static com.example.ui.screens.mainscreen.MainScreen.showMessage;
 
-public class ImagesListViewModel extends LiveData<List<ImagesResponse>> {
+
+public class ImagesList {
 
     private int page;
+
+    private final MutableLiveData<List<ImagesResponse>> searchingResponsesList;
+
+    public ImagesList(MutableLiveData<List<ImagesResponse>> liveData) {
+        searchingResponsesList = liveData;
+    }
 
     public void setPage(int page) {
         this.page = page;
@@ -30,12 +36,12 @@ public class ImagesListViewModel extends LiveData<List<ImagesResponse>> {
     }
 
     public void clearData() {
-        setValue(null);
+        searchingResponsesList.setValue(null);
     }
 
     public void apiCall() {
 
-        Single<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, PhotoScrollViewer.perPage);
+        Single<List<ImagesResponse>> imagesResponse = ApiClient.getInterface().getAllImages(page, MainScreen.perPage);
         imagesResponse.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<ImagesResponse>>() {
@@ -47,12 +53,12 @@ public class ImagesListViewModel extends LiveData<List<ImagesResponse>> {
 
                     @Override
                     public void onSuccess(@NonNull List<ImagesResponse> imagesResponses) {
-                        setValue(imagesResponses);
+                        searchingResponsesList.postValue(imagesResponses);
                     }
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "ERROR:  " + e.toString());
+                        Log.d(MainScreen.TAG, "ERROR:  " + e.toString());
                         showMessage("Network error...");
                     }
                 });

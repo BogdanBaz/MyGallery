@@ -13,6 +13,7 @@ import com.example.api.responses.ImagesResponse;
 import com.example.mygallery.R;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public  class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolder> {
@@ -21,8 +22,8 @@ public  class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolde
     private  List<ImagesResponse> imagesResponses;
     private final ClickPhotoCallback callback;
 
-    public PhotoAdapter(List<ImagesResponse> imagesResponses, ClickPhotoCallback callback) {
-        this.imagesResponses = imagesResponses;
+    public PhotoAdapter( ClickPhotoCallback callback) {
+        this.imagesResponses = new ArrayList<>();
         this.callback = callback;
     }
 
@@ -50,6 +51,10 @@ public  class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.MyViewHolde
     public void addImages(List<ImagesResponse> images) {
         int size = imagesResponses.size();
         imagesResponses.addAll(images);
+        if (size == 0) {
+            notifyDataSetChanged();
+        }
+        else
         notifyItemRangeChanged(size, imagesResponses.size());
     }
 
