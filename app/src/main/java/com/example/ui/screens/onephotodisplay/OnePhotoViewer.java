@@ -124,7 +124,6 @@ public class OnePhotoViewer extends AppCompatActivity implements View.OnClickLis
             }
 
         } else {
-            //TODO: Request only 1 try?? continue downl/share after accept permission   
             ActivityCompat.requestPermissions(OnePhotoViewer.this,
                     permissions, REQUEST_PERMISSION_CODE);
         }
